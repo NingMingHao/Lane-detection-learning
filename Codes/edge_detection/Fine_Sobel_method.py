@@ -10,8 +10,8 @@ import cv2
 import numpy as np
 
 
-def warpFrame(frame, src_points, dst_points):
-    frame_size = (frame.shape[1], frame.shape[0])
+def warpFrame(frame, ratio, src_points, dst_points):
+    frame_size = (int(ratio[0]*frame.shape[1]), int(ratio[1]*frame.shape[0]))
     M = cv2.getPerspectiveTransform(src_points, dst_points)
     Minv = cv2.getPerspectiveTransform(dst_points, src_points)
     warped_frame = cv2.warpPerspective(frame, M, frame_size, flags=cv2.INTER_LINEAR)
@@ -20,25 +20,25 @@ def warpFrame(frame, src_points, dst_points):
 
 
 imgs_path = '/Users/mac/Documents/University/Github/Lane-detection-learning/imgs/'
-img = cv2.imread(imgs_path+'um_000063.png') #00,32,63,81
+img = cv2.imread(imgs_path+'um_000032.png') #00,32,63,81
 
-#def on_EVENT_LBUTTONDOWN(event, x, y, flags, param):
-#    if event == cv2.EVENT_LBUTTONDOWN:
-#        xy = "%d,%d" % (x, y)
-#        cv2.circle(img, (x, y), 1, (255, 0, 0), thickness=-1)
-#        cv2.putText(img, xy, (x, y), cv2.FONT_HERSHEY_PLAIN,
-#                    1.0, (0, 0, 0), thickness=1)
-#        cv2.imshow("image", img)
-#
-#
-#cv2.namedWindow("image")
-#cv2.setMouseCallback("image", on_EVENT_LBUTTONDOWN)
-#cv2.imshow("image", img)
+def on_EVENT_LBUTTONDOWN(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        xy = "%d,%d" % (x, y)
+        cv2.circle(img, (x, y), 1, (255, 0, 0), thickness=-1)
+        cv2.putText(img, xy, (x, y), cv2.FONT_HERSHEY_PLAIN,
+                    1.0, (0, 0, 0), thickness=1)
+        cv2.imshow("image", img)
 
 
-src = np.float32([ [576,207], [645,207], [848,374], [420,374] ])
-dst = np.float32([ [420,0], [848,0], [848,374], [420,374] ])
-test_warp_image, M, Minv = warpFrame(img, src, dst)
+cv2.namedWindow("image")
+cv2.setMouseCallback("image", on_EVENT_LBUTTONDOWN)
+cv2.imshow("image", img)
+
+
+src = np.float32([ [553,234], [679,234], [848,374], [420,374] ])
+dst = np.float32([ [420,0], [848,0], [848,750], [420,750] ])
+test_warp_image, M, Minv = warpFrame(img, (1,2), src, dst)
 cv2.imshow('warp',test_warp_image)
 def absSobelThreshold(img, orient='x', min_thre=60, max_thre=255):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
